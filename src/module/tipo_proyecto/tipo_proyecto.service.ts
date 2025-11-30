@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ITipoProyectoRepository } from './repository/interface-tipo_proyecto.repository';
 import { CreateTipoProyectoDto } from './dto/create-tipo_proyecto.dto';
 import { UpdateTipoProyectoDto } from './dto/update-tipo_proyecto.dto';
+import { TipoProyectoDocument } from './schema/tipo_proyecto.schema';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class TipoProyectoService {
-  create(createTipoProyectoDto: CreateTipoProyectoDto) {
-    return 'This action adds a new tipoProyecto';
+  constructor(
+    @Inject('ITipoProyectoRepository')
+    private readonly tipoRepository: ITipoProyectoRepository
+  ) {}
+
+  async create(createDto: CreateTipoProyectoDto): Promise<TipoProyectoDocument> {
+    const tipo = this.tipoRepository.create(createDto);
+    return await this.tipoRepository.save(tipo);
   }
 
-  findAll() {
-    return `This action returns all tipoProyecto`;
+  async findAll(): Promise<TipoProyectoDocument[]> {
+    return this.tipoRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tipoProyecto`;
+  async findOne(id: string): Promise<TipoProyectoDocument> {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    
+    const tipo = await this.tipoRepository.findById(id);
+    if (!tipo) throw new NotFoundException(`Tipo de Proyecto ${id} no encontrado`);
+    return tipo;
   }
 
-  update(id: number, updateTipoProyectoDto: UpdateTipoProyectoDto) {
-    return `This action updates a #${id} tipoProyecto`;
+  async update(id: string, updateDto: UpdateTipoProyectoDto): Promise<TipoProyectoDocument> {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    
+    const updated = await this.tipoRepository.update(id, updateDto);
+    if (!updated) throw new NotFoundException(`Tipo de Proyecto ${id} no encontrado`);
+    return updated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tipoProyecto`;
+  async remove(id: string): Promise<TipoProyectoDocument> {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    
+    const deleted = await this.tipoRepository.softDelete(id);
+    if (!deleted) throw new NotFoundException(`Tipo de Proyecto ${id} no encontrado`);
+    return deleted;
   }
 }

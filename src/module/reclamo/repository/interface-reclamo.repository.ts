@@ -19,4 +19,6 @@ export interface IReclamoRepository {
     update(id: string, payload: Partial<Reclamo>): Promise<ReclamoDocument | null>;
 
     softDelete(id: string): Promise<ReclamoDocument | null>;
+
+    restore(id: string): Promise<ReclamoDocument | null>;
 }

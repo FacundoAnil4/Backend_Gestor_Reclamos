@@ -1,1 +1,7 @@
-export class CreateEstadoDto {}
+import { IsString, IsNotEmpty } from 'class-validator';
+
+export class CreateEstadoDto {
+    @IsString()
+    @IsNotEmpty()
+    nombre: string;
+}

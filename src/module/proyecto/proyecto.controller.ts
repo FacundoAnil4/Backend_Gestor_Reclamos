@@ -8,8 +8,8 @@ export class ProyectoController {
   constructor(private readonly proyectoService: ProyectoService) {}
 
   @Post()
-  create(@Body() createProyectoDto: CreateProyectoDto) {
-    return this.proyectoService.create(createProyectoDto);
+  create(@Body() createDto: CreateProyectoDto) {
+    return this.proyectoService.create(createDto);
   }
 
   @Get()
@@ -19,16 +19,16 @@ export class ProyectoController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.proyectoService.findOne(+id);
+    return this.proyectoService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProyectoDto: UpdateProyectoDto) {
-    return this.proyectoService.update(+id, updateProyectoDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateProyectoDto) {
+    return this.proyectoService.update(id, updateDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.proyectoService.remove(+id);
+    return this.proyectoService.remove(id);
   }
 }

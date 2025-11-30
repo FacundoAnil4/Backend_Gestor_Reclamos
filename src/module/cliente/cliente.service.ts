@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import type { IClienteRepository } from './repository/interface-cliente.repository';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
+import { ClienteDocument } from './schema/cliente.schema';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ClienteService {
-  create(createClienteDto: CreateClienteDto) {
-    return 'This action adds a new cliente';
+  constructor(
+    @Inject('IClienteRepository')
+      private readonly clienteRepository: IClienteRepository
+    ) {}
+
+  async create(createClienteDto: CreateClienteDto): Promise<ClienteDocument> {
+    // Aquí podrías validar si el historial_estado existe antes de crear
+    const cliente = this.clienteRepository.create(createClienteDto);
+    return await this.clienteRepository.save(cliente);
   }
 
-  findAll() {
-    return `This action returns all cliente`;
+  async findAll(): Promise<ClienteDocument[]> {
+    return this.clienteRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cliente`;
+  async findOne(id: string): Promise<ClienteDocument> {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    
+    const cliente = await this.clienteRepository.findById(id);
+    if (!cliente) throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+    
+    return cliente;
   }
 
-  update(id: number, updateClienteDto: UpdateClienteDto) {
-    return `This action updates a #${id} cliente`;
+  async update(id: string, updateClienteDto: UpdateClienteDto): Promise<ClienteDocument> {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+
+    const clienteActualizado = await this.clienteRepository.update(id, updateClienteDto);
+    if (!clienteActualizado) throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+    
+    return clienteActualizado;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cliente`;
+  async remove(id: string): Promise<ClienteDocument> {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+
+    const clienteBorrado = await this.clienteRepository.softDelete(id);
+    if (!clienteBorrado) throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+    
+    return clienteBorrado;
   }
 }

@@ -23,7 +23,7 @@ export class ReclamoRepository implements IReclamoRepository {
         return this.reclamoModel.findOne({ _id: id, deletedAt: null }).exec();
     }
 
-    // 🔥 LA JOYA DE LA CORONA: Trae todas las relaciones
+    // Trae todas las relaciones
     async findByIdWithRelations(id: string): Promise<ReclamoDocument | null> {
         return this.reclamoModel
             .findOne({ _id: id, deletedAt: null })
@@ -69,6 +69,16 @@ export class ReclamoRepository implements IReclamoRepository {
             .findByIdAndUpdate(
                 id, 
                 { deletedAt: new Date() }, 
+                { new: true }
+            )
+            .exec();
+    }
+
+    async restore(id: string): Promise<ReclamoDocument | null> {
+        return this.reclamoModel
+            .findByIdAndUpdate(
+                id, 
+                { deletedAt: null }, // Simplemente ponemos la fecha en null de nuevo
                 { new: true }
             )
             .exec();

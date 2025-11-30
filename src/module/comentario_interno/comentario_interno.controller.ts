@@ -5,30 +5,35 @@ import { UpdateComentarioInternoDto } from './dto/update-comentario_interno.dto'
 
 @Controller('comentario-interno')
 export class ComentarioInternoController {
-  constructor(private readonly comentarioInternoService: ComentarioInternoService) {}
+  constructor(private readonly comentarioService: ComentarioInternoService) {}
 
   @Post()
-  create(@Body() createComentarioInternoDto: CreateComentarioInternoDto) {
-    return this.comentarioInternoService.create(createComentarioInternoDto);
+  create(@Body() createDto: CreateComentarioInternoDto) {
+    return this.comentarioService.create(createDto);
   }
 
   @Get()
   findAll() {
-    return this.comentarioInternoService.findAll();
+    return this.comentarioService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.comentarioInternoService.findOne(+id);
+    return this.comentarioService.findOne(id);
+  }
+
+  @Get('reclamo/:idReclamo')
+  findByReclamo(@Param('idReclamo') idReclamo: string) {
+    return this.comentarioService.findByReclamo(idReclamo);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateComentarioInternoDto: UpdateComentarioInternoDto) {
-    return this.comentarioInternoService.update(+id, updateComentarioInternoDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateComentarioInternoDto) {
+    return this.comentarioService.update(id, updateDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.comentarioInternoService.remove(+id);
+    return this.comentarioService.remove(id);
   }
 }

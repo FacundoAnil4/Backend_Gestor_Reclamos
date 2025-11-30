@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { EstadoReclamo, TipoReclamo, PrioridadReclamo, CriticidadReclamo } from '../enums/reclamo.enums'; // Asumiendo que los guardaste aparte
+import { Evidencia, EvidenciaSchema } from './evidencia.schema';
 
 export type ReclamoDocument = HydratedDocument<Reclamo>;
 
@@ -27,6 +28,9 @@ export class Reclamo {
   // Puede ser null si el reclamo es nuevo y nadie lo tomó aún
   @Prop({ type: Types.ObjectId, ref: 'Usuario', required: false, default: null })
   id_usuario_asignado: Types.ObjectId;
+
+  @Prop({ type: [EvidenciaSchema], default: [] })
+  evidencias: Evidencia[];
 
   // --- FKs como ENUMS ---
   @Prop({ required: true, enum: TipoReclamo, type: String })

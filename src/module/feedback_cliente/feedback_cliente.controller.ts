@@ -5,30 +5,30 @@ import { UpdateFeedbackClienteDto } from './dto/update-feedback_cliente.dto';
 
 @Controller('feedback-cliente')
 export class FeedbackClienteController {
-  constructor(private readonly feedbackClienteService: FeedbackClienteService) {}
+  constructor(private readonly feedbackService: FeedbackClienteService) {}
 
   @Post()
-  create(@Body() createFeedbackClienteDto: CreateFeedbackClienteDto) {
-    return this.feedbackClienteService.create(createFeedbackClienteDto);
+  create(@Body() createDto: CreateFeedbackClienteDto) {
+    return this.feedbackService.create(createDto);
   }
 
   @Get()
   findAll() {
-    return this.feedbackClienteService.findAll();
+    return this.feedbackService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.feedbackClienteService.findOne(+id);
+    return this.feedbackService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFeedbackClienteDto: UpdateFeedbackClienteDto) {
-    return this.feedbackClienteService.update(+id, updateFeedbackClienteDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateFeedbackClienteDto) {
+    return this.feedbackService.update(id, updateDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.feedbackClienteService.remove(+id);
+    return this.feedbackService.remove(id);
   }
 }

@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { HistorialReclamoService } from './historial_reclamo.service';
 import { CreateHistorialReclamoDto } from './dto/create-historial_reclamo.dto';
-import { UpdateHistorialReclamoDto } from './dto/update-historial_reclamo.dto';
 
 @Controller('historial-reclamo')
 export class HistorialReclamoController {
-  constructor(private readonly historialReclamoService: HistorialReclamoService) {}
+  constructor(private readonly historialService: HistorialReclamoService) {}
 
   @Post()
-  create(@Body() createHistorialReclamoDto: CreateHistorialReclamoDto) {
-    return this.historialReclamoService.create(createHistorialReclamoDto);
+  create(@Body() createDto: CreateHistorialReclamoDto) {
+    return this.historialService.create(createDto);
   }
 
   @Get()
   findAll() {
-    return this.historialReclamoService.findAll();
+    return this.historialService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.historialReclamoService.findOne(+id);
+    return this.historialService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateHistorialReclamoDto: UpdateHistorialReclamoDto) {
-    return this.historialReclamoService.update(+id, updateHistorialReclamoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.historialReclamoService.remove(+id);
+  @Get('reclamo/:idReclamo')
+  findByReclamo(@Param('idReclamo') idReclamo: string) {
+    return this.historialService.findByReclamo(idReclamo);
   }
 }

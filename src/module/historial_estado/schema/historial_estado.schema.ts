@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { Estado } from '../estado/schema/estado.schema';
+import { Estado } from '../../estado/schema/estado.schema';
 
 export type HistorialEstadoDocument = HydratedDocument<HistorialEstado>;
 
