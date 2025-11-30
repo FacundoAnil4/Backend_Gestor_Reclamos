@@ -34,7 +34,13 @@ export class TipoProyectoRepository implements ITipoProyectoRepository {
             .exec();
     }
 
-    async delete(id: string): Promise<TipoProyectoDocument | null> {
-        return this.tipoProyectoModel.findByIdAndDelete(id).exec();
+    async softDelete(id: string): Promise<TipoProyectoDocument | null> {
+        return this.tipoProyectoModel
+            .findByIdAndUpdate(
+                id, 
+                { deletedAt: new Date() }, // Seteamos la fecha actual
+                { new: true }
+            )
+            .exec();
     }
 }

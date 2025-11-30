@@ -13,4 +13,6 @@ export interface IProyectoRepository {
     findAll(): Promise<ProyectoDocument[]>;
 
     update(id: string, payload: Partial<Proyecto>): Promise<ProyectoDocument | null>;
+
+    softDelete(id: string): Promise<ProyectoDocument | null>;
 }

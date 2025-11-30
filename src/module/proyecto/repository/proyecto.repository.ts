@@ -48,4 +48,14 @@ export class ProyectoRepository implements IProyectoRepository {
             .findByIdAndUpdate(id, payload, { new: true })
             .exec();
     }
+
+    async softDelete(id: string): Promise<ProyectoDocument | null> {
+            return this.proyectoModel
+                .findByIdAndUpdate(
+                    id, 
+                    { deletedAt: new Date() }, // Seteamos la fecha actual
+                    { new: true }
+                )
+                .exec();
+        }
 }

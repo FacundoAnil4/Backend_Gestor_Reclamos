@@ -16,6 +16,9 @@ export class Proyecto {
 
   @Prop({type: Types.ObjectId, ref: 'TipoProyecto', required: true })
   id_tipoProyecto: Types.ObjectId;
+
+  @Prop({ type: Date, default: null })
+    deletedAt: Date;
 }
 
 export const ProyectoSchema = SchemaFactory.createForClass(Proyecto);

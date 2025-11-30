@@ -11,5 +11,5 @@ export interface IClienteRepository {
     
     update(id: string, payload: Partial<Cliente>): Promise<ClienteDocument | null>;
     
-    delete(id: string): Promise<ClienteDocument | null>;
+    softDelete(id: string): Promise<ClienteDocument | null>;
 }

@@ -10,6 +10,9 @@ export class TipoProyecto {
 
     @Prop()
     descripcion: string;
+
+    @Prop({ type: Date, default: null })
+    deletedAt: Date;
 }
 
 export const TipoProyectoSchema = SchemaFactory.createForClass(TipoProyecto);

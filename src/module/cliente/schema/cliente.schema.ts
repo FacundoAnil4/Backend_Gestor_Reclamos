@@ -22,6 +22,9 @@ export class Cliente extends Document {
 
     @Prop({ type: Types.ObjectId, ref: 'HistorialEstado', required: true })
     id_historial_estado: string;
+
+    @Prop({ type: Date, default: null })
+    deletedAt: Date;
 }
 
 export const ClienteSchema = SchemaFactory.createForClass(Cliente);

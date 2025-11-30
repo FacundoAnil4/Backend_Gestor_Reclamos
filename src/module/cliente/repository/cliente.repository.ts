@@ -33,7 +33,13 @@ export class ClienteRepository implements IClienteRepository {
             .exec();
     }
 
-    async delete(id: string): Promise<ClienteDocument | null> {
-        return this.clienteModel.findByIdAndDelete(id).exec();
-    }
+    async softDelete(id: string): Promise<ClienteDocument | null> {
+            return this.clienteModel
+                .findByIdAndUpdate(
+                    id, 
+                    { deletedAt: new Date() }, // Seteamos la fecha actual
+                    { new: true }
+                )
+                .exec();
+        }
 }

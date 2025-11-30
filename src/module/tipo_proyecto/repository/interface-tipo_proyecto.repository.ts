@@ -11,7 +11,7 @@ export interface ITipoProyectoRepository {
     
     update(id: string, payload: Partial<TipoProyecto>): Promise<TipoProyectoDocument | null>;
     
-    delete(id: string): Promise<TipoProyectoDocument | null>;
+    softDelete(id: string): Promise<TipoProyectoDocument | null>;
 }
 
 export const ITipoProyectoRepository = 'ITipoProyectoRepository';
