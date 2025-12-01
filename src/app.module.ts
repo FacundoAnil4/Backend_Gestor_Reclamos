@@ -14,6 +14,7 @@ import { HistorialReclamoModule } from './module/historial_reclamo/historial_rec
 import { ComentarioInternoModule } from './module/comentario_interno/comentario_interno.module';
 import { UsuarioModule } from './module/usuario/usuario.module';
 import { AreaModule } from './module/area/area.module';
+import { ReporteModule } from './module/reporte/reporte.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AreaModule } from './module/area/area.module';
     ComentarioInternoModule,
     UsuarioModule,
     AreaModule,
+    ReporteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
