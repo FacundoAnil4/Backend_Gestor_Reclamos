@@ -9,7 +9,7 @@ export class ReclamoRepository implements IReclamoRepository {
     constructor(
         @InjectModel(Reclamo.name)
         private readonly reclamoModel: Model<ReclamoDocument>,
-    ) {}
+    ) { }
 
     create(payload: Partial<Reclamo>): ReclamoDocument {
         return new this.reclamoModel(payload);
@@ -26,9 +26,12 @@ export class ReclamoRepository implements IReclamoRepository {
     async findByIdWithRelations(id: string): Promise<ReclamoDocument | null> {
         return this.reclamoModel
             .findOne({ _id: id, deletedAt: null })
-            .populate('id_proyecto')        
-            .populate('id_area')            
-            .populate('id_usuario_creador', 'nombre email') 
+            .populate({
+                path: 'id_proyecto',
+                populate: { path: 'id_cliente' }
+            })
+            .populate('id_area')
+            .populate('id_usuario_creador', 'nombre email')
             .populate('id_usuario_asignado', 'nombre email')
             .exec();
     }
@@ -36,8 +39,10 @@ export class ReclamoRepository implements IReclamoRepository {
     async findAll(): Promise<ReclamoDocument[]> {
         return this.reclamoModel
             .find({ deletedAt: null })
-            .populate('id_proyecto', 'nombre') 
+            .populate('id_proyecto', 'nombre')
+            .populate('id_area', 'nombre')
             .populate('id_usuario_asignado', 'nombre')
+            .sort({ createdAt: -1 })
             .exec();
     }
 
@@ -74,8 +79,8 @@ export class ReclamoRepository implements IReclamoRepository {
     async softDelete(id: string): Promise<ReclamoDocument | null> {
         return this.reclamoModel
             .findByIdAndUpdate(
-                id, 
-                { deletedAt: new Date() }, 
+                id,
+                { deletedAt: new Date() },
                 { new: true }
             )
             .exec();
@@ -84,8 +89,8 @@ export class ReclamoRepository implements IReclamoRepository {
     async restore(id: string): Promise<ReclamoDocument | null> {
         return this.reclamoModel
             .findByIdAndUpdate(
-                id, 
-                { deletedAt: null }, 
+                id,
+                { deletedAt: null },
                 { new: true }
             )
             .exec();

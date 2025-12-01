@@ -4,16 +4,24 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { UsuarioDocument } from './schema/usuario.schema';
 import { UsuarioHelper } from './helper/usuario.helper';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuarioService {
-  constructor(private readonly usuarioRepository: UsuarioRepository) {}
+  constructor(private readonly usuarioRepository: UsuarioRepository) { }
 
   async create(createDto: CreateUsuarioDto): Promise<UsuarioDocument> {
     const existente = await this.usuarioRepository.findByEmail(createDto.email);
     if (existente) throw new ConflictException(`El email ${createDto.email} ya está registrado`);
 
-    const data = UsuarioHelper.mapDtoToEntity(createDto);
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(createDto.password, salt);
+
+    const data = UsuarioHelper.mapDtoToEntity({
+      ...createDto,
+      password: hash
+    });
+
     const usuario = this.usuarioRepository.create(data);
     return await this.usuarioRepository.save(usuario);
   }
@@ -50,5 +58,9 @@ export class UsuarioService {
     const restored = await (this.usuarioRepository as any).restore(id);
     if (!restored) throw new NotFoundException(`No se pudo restaurar el usuario ${id}`);
     return restored;
+  }
+
+  async findByEmailWithPassword(email: string) {
+    return this.usuarioRepository.findByEmail(email);
   }
 }

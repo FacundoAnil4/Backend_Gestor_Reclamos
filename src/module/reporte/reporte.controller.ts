@@ -7,13 +7,13 @@ import { FilterReclamoDto } from '../reclamo/dto/filter-reclamo.dto';
 
 @Controller('reportes')
 export class ReporteController {
-  constructor(private readonly reporteService: ReporteService) {}
+  constructor(private readonly reporteService: ReporteService) { }
 
   // --- ANALYTICS (HU15, HU16, HU17) ---
 
   @Get('dashboard')
-  getDashboard() {
-    return this.reporteService.getDashboardKpis();
+  getDashboard(@Query() filters: FilterReclamoDto) { // <--- Agregar @Query
+    return this.reporteService.getDashboardKpis(filters); // <--- Pasar filtros
   }
 
   // HU16: Usamos FilterReclamoDto para validar los query params

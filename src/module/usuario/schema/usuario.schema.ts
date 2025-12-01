@@ -22,12 +22,15 @@ export enum AreaUsuario {
 export class Usuario {
   @Prop({ required: true, minlength: 3 })
   nombre: string;
-  
+
   @Prop({ required: true, unique: true, match: /.+@.+\..+/ })
   email: string;
 
   @Prop({ required: true, enum: RolUsuario, type: String })
   rol: RolUsuario;
+
+  @Prop({ required: true })
+  password: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Area', required: true })
   id_area: Types.ObjectId;

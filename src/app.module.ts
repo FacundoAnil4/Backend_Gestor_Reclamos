@@ -15,12 +15,14 @@ import { ComentarioInternoModule } from './module/comentario_interno/comentario_
 import { UsuarioModule } from './module/usuario/usuario.module';
 import { AreaModule } from './module/area/area.module';
 import { ReporteModule } from './module/reporte/reporte.module';
+import { AuthModule } from './module/auth/auth.module';
+import { UploadController } from './common/upload/upload.controller';
 
 @Module({
   imports: [
     // 3. Configurar variables de entorno
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
 
     // 4. Configurar conexión a MongoDB
@@ -44,8 +46,9 @@ import { ReporteModule } from './module/reporte/reporte.module';
     UsuarioModule,
     AreaModule,
     ReporteModule,
+    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, UploadController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

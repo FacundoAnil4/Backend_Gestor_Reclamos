@@ -12,12 +12,12 @@ export class ReporteService {
   constructor(
     @Inject('IReporteRepository') // Usamos el token de inyección de la interfaz
     private readonly reporteRepository: IReporteRepository
-  ) {}
+  ) { }
 
   // --- ANALYTICS ---
 
-  async getDashboardKpis() {
-    return this.reporteRepository.getDashboardKpis();
+  async getDashboardKpis(filters?: FilterReclamoDto) {
+    return this.reporteRepository.getDashboardKpis(filters);
   }
 
   async getReporteFiltrado(filters: FilterReclamoDto) {
@@ -26,14 +26,14 @@ export class ReporteService {
 
   async exportarReporteCsv(filters: FilterReclamoDto): Promise<string> {
     const datos = await this.reporteRepository.findReclamosByFilters(filters);
-    
+
     const datosPlanos = datos.map((r: any) => ({
-        ID: r._id.toString(),
-        Descripcion: r.descripcion_detallada,
-        Estado: r.id_estado_reclamo,
-        Prioridad: r.id_prioridad,
-        Area: r.id_area?.nombre || 'N/A', // Asume que se hizo populate
-        Fecha: r.createdAt ? r.createdAt.toISOString() : ''
+      ID: r._id.toString(),
+      Descripcion: r.descripcion_detallada,
+      Estado: r.id_estado_reclamo,
+      Prioridad: r.id_prioridad,
+      Area: r.id_area?.nombre || 'N/A', // Asume que se hizo populate
+      Fecha: r.createdAt ? r.createdAt.toISOString() : ''
     }));
 
     if (datosPlanos.length === 0) return '';

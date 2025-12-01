@@ -15,7 +15,13 @@ export class CreateUsuarioDto {
     @IsNotEmpty()
     rol: RolUsuario;
 
+    @IsString()
+    @IsNotEmpty()
+    @MinLength(6)
+    password: string;
+
     @IsMongoId()
     @IsNotEmpty()
     id_area: string;
+
 }
