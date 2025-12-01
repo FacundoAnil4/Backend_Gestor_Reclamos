@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsEnum, IsArray, IsOptional, IsMongoId, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TipoReclamo, PrioridadReclamo, CriticidadReclamo } from '../enums/reclamo.enums';
+import { TipoReclamo, PrioridadReclamo, CriticidadReclamo, EstadoReclamo } from '../enums/reclamo.enums';
 
 // DTO interno para validar cada objeto de evidencia
 class EvidenciaDto {
@@ -45,6 +45,10 @@ export class CreateReclamoDto {
   @IsEnum(CriticidadReclamo)
   @IsNotEmpty()
   id_criticidad: CriticidadReclamo;
+
+  @IsEnum(EstadoReclamo)
+  @IsOptional()
+  id_estado_reclamo?: EstadoReclamo;
 
   @IsArray()
   @IsOptional()
