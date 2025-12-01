@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ReclamoRepository } from './repository/reclamo.repository'; 
 import { CreateReclamoDto } from './dto/create-reclamo.dto';
-import { ReclamoDocument } from './schema/reclamo.schema'; // Importamos el Enum
-import { EstadoReclamo } from './enums/reclamo.enums';
+import { ReclamoDocument } from './schema/reclamo.schema'; 
+import { EstadoReclamo } from './enums/reclamo.enums'; // Asegúrate de que la ruta al Enum sea correcta
 import { UpdateReclamoDto } from './dto/update-reclamo.dto';
 import { ReclamoHelper } from './helper/reclamo.helper';
 import { HistorialReclamoService } from '../historial_reclamo/historial_reclamo.service';
@@ -37,17 +37,26 @@ export class ReclamoService {
     const reclamoActual = await this.reclamoRepository.findById(id);
     if (!reclamoActual) throw new NotFoundException(`Reclamo ${id} no encontrado`);
 
-    // VALIDACIÓN HU13: Cierre de Reclamo
-    // Si cambia a CERRADO o RESUELTO, debe tener resumen.
-    if (updateReclamoDto.id_estado_reclamo === EstadoReclamo.CERRADO || 
-        updateReclamoDto.id_estado_reclamo === EstadoReclamo.RESUELTO) {
+    // 🔥 REGLA DE NEGOCIO: Bloqueo de modificación en reclamos finalizados
+    if (reclamoActual.id_estado_reclamo === EstadoReclamo.CERRADO || 
+        reclamoActual.id_estado_reclamo === EstadoReclamo.RESUELTO) {
         
-        // Si no envía resumen ahora y el reclamo no lo tenía de antes... ERROR.
-        if (!updateReclamoDto.resumen_resolucion && !reclamoActual.resumen_resolucion) {
-            throw new BadRequestException('Para cerrar o resolver un reclamo, debe proporcionar un resumen de resolución.');
+        // Verificamos si se está intentando reabrir (cambiar el estado a algo que NO sea cerrado/resuelto)
+        const estaReabriendo = updateReclamoDto.id_estado_reclamo && 
+                               updateReclamoDto.id_estado_reclamo !== EstadoReclamo.CERRADO && 
+                               updateReclamoDto.id_estado_reclamo !== EstadoReclamo.RESUELTO;
+
+        if (!estaReabriendo) {
+            throw new BadRequestException('El reclamo está finalizado y no admite modificaciones (debe reabrirlo cambiando su estado primero).');
         }
     }
 
+    // VALIDACIÓN HU13: Resumen obligatorio al cerrar
+    if ((updateReclamoDto.id_estado_reclamo === EstadoReclamo.CERRADO || 
+         updateReclamoDto.id_estado_reclamo === EstadoReclamo.RESUELTO) &&
+        !updateReclamoDto.resumen_resolucion && !reclamoActual.resumen_resolucion) {
+            throw new BadRequestException('Para cerrar o resolver un reclamo, debe proporcionar un resumen de resolución.');
+    }
 
     const data = ReclamoHelper.mapDtoToEntity(updateReclamoDto);
 

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateAreaDto {
   @IsString()
@@ -8,4 +8,8 @@ export class CreateAreaDto {
   @IsString()
   @IsOptional()
   descripcion?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  es_interna?: boolean;
 }

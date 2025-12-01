@@ -12,7 +12,9 @@ export class AreaHelper {
 
   static mapDtoToEntity(dto: CreateAreaDto): Partial<Area> {
     return {
-      ...dto,
+      nombre: dto.nombre,
+      descripcion: dto['descripcion'],
+      es_interna: dto['es_interna'] || false // Default a false (pública)
     };
   }
 }

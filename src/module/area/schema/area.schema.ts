@@ -11,7 +11,9 @@ export class Area {
   @Prop({ default: '' })
   descripcion: string;
 
-  // Soft Delete
+  @Prop({ type: Boolean, default: false })
+  es_interna: boolean; 
+
   @Prop({ type: Date, default: null })
   deletedAt: Date;
 }
