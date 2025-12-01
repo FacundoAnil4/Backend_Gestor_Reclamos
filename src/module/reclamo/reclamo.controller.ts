@@ -26,8 +26,13 @@ export class ReclamoController {
   async findByProyecto(@Param('idProyecto') idProyecto: string) {
     return this.reclamoService.findByProyecto(idProyecto);
   }
+
+  // 🔥 HU07: Endpoint para filtrar por Área - ESTO FALTABA
+  @Get('area/:idArea')
+  async findByArea(@Param('idArea') idArea: string) {
+    return this.reclamoService.findByArea(idArea);
+  }
   
-  // Busca reclamo por usuario
   @Get('asignados/:idUsuario')
   async findByUsuario(@Param('idUsuario') idUsuario: string) {
     return this.reclamoService.findByUsuarioAsignado(idUsuario);
@@ -38,13 +43,11 @@ export class ReclamoController {
     return this.reclamoService.update(id, updateReclamoDto);
   }
 
-  // Soft Delete (Borrado lógico)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return this.reclamoService.remove(id);
   }
 
-  // Restaurar (Recuperar un borrado lógico)
   @Patch('restore/:id')
   async restore(@Param('id') id: string) {
     return this.reclamoService.restore(id);

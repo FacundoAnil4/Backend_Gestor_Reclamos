@@ -12,7 +12,6 @@ export class ReclamoHelper {
     }
   }
 
-
   static mapDtoToEntity(dto: CreateReclamoDto | UpdateReclamoDto): Partial<Reclamo> {
     const entity: any = { ...dto };
 
@@ -33,7 +32,6 @@ export class ReclamoHelper {
     if (dto.evidencias) {
       entity.evidencias = dto.evidencias.map(e => ({
         ...e,
-        // Si no viene fecha, ponemos la actual. Si viene, la mantenemos.
         fecha_subida: e['fecha_subida'] || new Date()
       }));
     }

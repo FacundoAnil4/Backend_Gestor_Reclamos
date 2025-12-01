@@ -23,13 +23,12 @@ export class ReclamoRepository implements IReclamoRepository {
         return this.reclamoModel.findOne({ _id: id, deletedAt: null }).exec();
     }
 
-    // Trae todas las relaciones
     async findByIdWithRelations(id: string): Promise<ReclamoDocument | null> {
         return this.reclamoModel
             .findOne({ _id: id, deletedAt: null })
-            .populate('id_proyecto')        // Datos del proyecto
-            .populate('id_area')            // Datos del area
-            .populate('id_usuario_creador', 'nombre email') // Solo info básica
+            .populate('id_proyecto')        
+            .populate('id_area')            
+            .populate('id_usuario_creador', 'nombre email') 
             .populate('id_usuario_asignado', 'nombre email')
             .exec();
     }
@@ -37,12 +36,11 @@ export class ReclamoRepository implements IReclamoRepository {
     async findAll(): Promise<ReclamoDocument[]> {
         return this.reclamoModel
             .find({ deletedAt: null })
-            .populate('id_proyecto', 'nombre') // Quizás solo quieres el nombre del proyecto en la lista
+            .populate('id_proyecto', 'nombre') 
             .populate('id_usuario_asignado', 'nombre')
             .exec();
     }
 
-    // Filtro: Ver reclamos de un proyecto específico
     async findAllByProyecto(idProyecto: string): Promise<ReclamoDocument[]> {
         return this.reclamoModel
             .find({ id_proyecto: new Types.ObjectId(idProyecto), deletedAt: null })
@@ -50,11 +48,20 @@ export class ReclamoRepository implements IReclamoRepository {
             .exec();
     }
 
-    // Filtro: "Mis reclamos asignados"
     async findAllByUsuarioAsignado(idUsuario: string): Promise<ReclamoDocument[]> {
         return this.reclamoModel
             .find({ id_usuario_asignado: new Types.ObjectId(idUsuario), deletedAt: null })
             .populate('id_proyecto', 'nombre')
+            .exec();
+    }
+
+    // 🔥 IMPLEMENTACIÓN HU07: Filtrar por Área
+    async findAllByArea(idArea: string): Promise<ReclamoDocument[]> {
+        return this.reclamoModel
+            .find({ id_area: new Types.ObjectId(idArea), deletedAt: null })
+            .populate('id_proyecto', 'nombre') // Contexto útil para la lista
+            .populate('id_usuario_asignado', 'nombre') // Saber quién lo tiene
+            .sort({ createdAt: -1 }) // Ordenar por más recientes
             .exec();
     }
 
@@ -78,7 +85,7 @@ export class ReclamoRepository implements IReclamoRepository {
         return this.reclamoModel
             .findByIdAndUpdate(
                 id, 
-                { deletedAt: null }, // Simplemente ponemos la fecha en null de nuevo
+                { deletedAt: null }, 
                 { new: true }
             )
             .exec();

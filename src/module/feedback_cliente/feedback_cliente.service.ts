@@ -1,9 +1,9 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import type { IFeedbackClienteRepository } from './repository/interface-feedback_cliente.repository';
 import { CreateFeedbackClienteDto } from './dto/create-feedback_cliente.dto';
 import { UpdateFeedbackClienteDto } from './dto/update-feedback_cliente.dto';
-import { FeedbackClienteDocument, FeedbackCliente } from './schema/feedback_cliente.schema';
-import { Types } from 'mongoose';
+import { FeedbackClienteDocument } from './schema/feedback_cliente.schema';
+import { FeedbackClienteHelper } from './helper/feedback_cliente.helper';
 
 @Injectable()
 export class FeedbackClienteService {
@@ -13,11 +13,7 @@ export class FeedbackClienteService {
   ) {}
 
   async create(createDto: CreateFeedbackClienteDto): Promise<FeedbackClienteDocument> {
-    const data: Partial<FeedbackCliente> = {
-        ...createDto,
-        id_reclamo: new Types.ObjectId(createDto.id_reclamo)
-    };
-
+    const data = FeedbackClienteHelper.mapDtoToEntity(createDto);
     const feedback = this.feedbackRepository.create(data);
     return await this.feedbackRepository.save(feedback);
   }
@@ -27,7 +23,7 @@ export class FeedbackClienteService {
   }
 
   async findOne(id: string): Promise<FeedbackClienteDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    FeedbackClienteHelper.validateId(id);
     
     const feedback = await this.feedbackRepository.findByIdWithRelations(id);
     if (!feedback) throw new NotFoundException(`Feedback ${id} no encontrado`);
@@ -35,18 +31,17 @@ export class FeedbackClienteService {
   }
 
   async update(id: string, updateDto: UpdateFeedbackClienteDto): Promise<FeedbackClienteDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    FeedbackClienteHelper.validateId(id);
     
-    const data: any = { ...updateDto };
-    if (updateDto.id_reclamo) data.id_reclamo = new Types.ObjectId(updateDto.id_reclamo);
-
+    const data = FeedbackClienteHelper.mapDtoToEntity(updateDto);
     const updated = await this.feedbackRepository.update(id, data);
+    
     if (!updated) throw new NotFoundException(`Feedback ${id} no encontrado`);
     return updated;
   }
 
   async remove(id: string): Promise<FeedbackClienteDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    FeedbackClienteHelper.validateId(id);
     
     const deleted = await this.feedbackRepository.softDelete(id);
     if (!deleted) throw new NotFoundException(`Feedback ${id} no encontrado`);

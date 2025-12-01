@@ -31,4 +31,9 @@ export class TipoProyectoController {
   remove(@Param('id') id: string) {
     return this.tipoService.remove(id);
   }
+  
+  @Patch('restore/:id')
+  restore(@Param('id') id: string) {
+    return this.tipoService.restore(id);
+  }
 }

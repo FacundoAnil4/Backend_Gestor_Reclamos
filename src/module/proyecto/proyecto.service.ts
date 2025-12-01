@@ -1,9 +1,9 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import type { IProyectoRepository } from './repository/interface-proyecto.repository';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
-import { ProyectoDocument, Proyecto } from './schema/proyecto.schema';
-import { Types } from 'mongoose';
+import { ProyectoDocument } from './schema/proyecto.schema';
+import { ProyectoHelper } from './helper/proyecto.helper';
 
 @Injectable()
 export class ProyectoService {
@@ -13,12 +13,11 @@ export class ProyectoService {
   ) {}
 
   async create(createDto: CreateProyectoDto): Promise<ProyectoDocument> {
-    const data: Partial<Proyecto> = {
-        ...createDto,
-        id_cliente: new Types.ObjectId(createDto.id_cliente),
-        id_tipoProyecto: new Types.ObjectId(createDto.id_tipoProyecto)
-    };
+    // Validamos IDs foráneos antes de procesar
+    ProyectoHelper.validateId(createDto.id_cliente);
+    ProyectoHelper.validateId(createDto.id_tipoProyecto);
 
+    const data = ProyectoHelper.mapDtoToEntity(createDto);
     const proyecto = this.proyectoRepository.create(data);
     return await this.proyectoRepository.save(proyecto);
   }
@@ -28,7 +27,7 @@ export class ProyectoService {
   }
 
   async findOne(id: string): Promise<ProyectoDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    ProyectoHelper.validateId(id);
     
     const proyecto = await this.proyectoRepository.findByIdWithRelations(id);
     if (!proyecto) throw new NotFoundException(`Proyecto ${id} no encontrado`);
@@ -36,27 +35,40 @@ export class ProyectoService {
   }
 
   async findByCliente(idCliente: string): Promise<ProyectoDocument[]> {
-    if (!Types.ObjectId.isValid(idCliente)) throw new BadRequestException('ID Cliente inválido');
+    ProyectoHelper.validateId(idCliente);
     return this.proyectoRepository.findByCliente(idCliente);
   }
 
   async update(id: string, updateDto: UpdateProyectoDto): Promise<ProyectoDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    ProyectoHelper.validateId(id);
     
-    const data: any = { ...updateDto };
-    if (updateDto.id_cliente) data.id_cliente = new Types.ObjectId(updateDto.id_cliente);
-    if (updateDto.id_tipoProyecto) data.id_tipoProyecto = new Types.ObjectId(updateDto.id_tipoProyecto);
-
+    // Si vienen IDs en el update, los validamos también
+    if(updateDto.id_cliente) ProyectoHelper.validateId(updateDto.id_cliente);
+    
+    const data = ProyectoHelper.mapDtoToEntity(updateDto);
     const updated = await this.proyectoRepository.update(id, data);
+    
     if (!updated) throw new NotFoundException(`Proyecto ${id} no encontrado`);
     return updated;
   }
 
   async remove(id: string): Promise<ProyectoDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    ProyectoHelper.validateId(id);
     
     const deleted = await this.proyectoRepository.softDelete(id);
     if (!deleted) throw new NotFoundException(`Proyecto ${id} no encontrado`);
     return deleted;
+  }
+
+  async restore(id: string): Promise<ProyectoDocument> {
+    ProyectoHelper.validateId(id);
+    
+    // Asumiendo que agregaste el método restore en tu repositorio (si no, agrégalo igual que en Area)
+    // Si tu repo no tiene restore definido en la interfaz IProyectoRepository, TS se quejará.
+    // Asegúrate de agregarlo a la interfaz y a la implementación del repo.
+    const restored = await (this.proyectoRepository as any).restore(id); 
+    
+    if (!restored) throw new NotFoundException(`No se pudo restaurar el proyecto ${id}`);
+    return restored;
   }
 }

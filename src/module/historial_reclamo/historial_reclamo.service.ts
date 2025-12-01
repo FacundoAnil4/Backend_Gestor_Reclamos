@@ -1,20 +1,15 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { HistorialReclamoRepository } from './repository/historial_reclamo.repository';
 import { CreateHistorialReclamoDto } from './dto/create-historial_reclamo.dto';
-import { HistorialReclamoDocument, HistorialReclamo } from './schema/historial_reclamo.schema';
-import { Types } from 'mongoose';
+import { HistorialReclamoDocument } from './schema/historial_reclamo.schema';
+import { HistorialReclamoHelper } from './helper/historial_reclamo.helper';
 
 @Injectable()
 export class HistorialReclamoService {
   constructor(private readonly historialRepository: HistorialReclamoRepository) {}
 
   async create(createDto: CreateHistorialReclamoDto): Promise<HistorialReclamoDocument> {
-    const data: Partial<HistorialReclamo> = {
-        ...createDto,
-        id_reclamo: new Types.ObjectId(createDto.id_reclamo),
-        id_usuario_accion: new Types.ObjectId(createDto.id_usuario_accion)
-    };
-
+    const data = HistorialReclamoHelper.mapDtoToEntity(createDto);
     const historial = this.historialRepository.create(data);
     return await this.historialRepository.save(historial);
   }
@@ -24,7 +19,7 @@ export class HistorialReclamoService {
   }
 
   async findOne(id: string): Promise<HistorialReclamoDocument> {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
+    HistorialReclamoHelper.validateId(id);
     
     const historial = await this.historialRepository.findByIdWithRelations(id);
     if (!historial) throw new NotFoundException(`Historial ${id} no encontrado`);
@@ -32,7 +27,7 @@ export class HistorialReclamoService {
   }
 
   async findByReclamo(idReclamo: string): Promise<HistorialReclamoDocument[]> {
-    if (!Types.ObjectId.isValid(idReclamo)) throw new BadRequestException('ID Reclamo inválido');
+    HistorialReclamoHelper.validateId(idReclamo);
     return this.historialRepository.findAllByReclamo(idReclamo);
   }
 }

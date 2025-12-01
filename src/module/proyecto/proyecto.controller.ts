@@ -1,39 +1,74 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ProyectoService } from './proyecto.service';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import type { IProyectoRepository } from './repository/interface-proyecto.repository';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
+import { ProyectoDocument } from './schema/proyecto.schema';
+import { ProyectoHelper } from './helper/proyecto.helper';
 
-@Controller('proyecto')
-export class ProyectoController {
-  constructor(private readonly proyectoService: ProyectoService) {}
+@Injectable()
+export class ProyectoService {
+  constructor(
+    @Inject('IProyectoRepository')
+    private readonly proyectoRepository: IProyectoRepository
+  ) {}
 
-  @Post()
-  create(@Body() createDto: CreateProyectoDto) {
-    return this.proyectoService.create(createDto);
+  async create(createDto: CreateProyectoDto): Promise<ProyectoDocument> {
+    // Validamos IDs foráneos antes de procesar
+    ProyectoHelper.validateId(createDto.id_cliente);
+    ProyectoHelper.validateId(createDto.id_tipoProyecto);
+
+    const data = ProyectoHelper.mapDtoToEntity(createDto);
+    const proyecto = this.proyectoRepository.create(data);
+    return await this.proyectoRepository.save(proyecto);
   }
 
-  @Get()
-  findAll() {
-    return this.proyectoService.findAll();
+  async findAll(): Promise<ProyectoDocument[]> {
+    return this.proyectoRepository.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.proyectoService.findOne(id);
+  async findOne(id: string): Promise<ProyectoDocument> {
+    ProyectoHelper.validateId(id);
+    
+    const proyecto = await this.proyectoRepository.findByIdWithRelations(id);
+    if (!proyecto) throw new NotFoundException(`Proyecto ${id} no encontrado`);
+    return proyecto;
   }
 
-  @Get('cliente/:idCliente')
-  findByCliente(@Param('idCliente') idCliente: string) {
-    return this.proyectoService.findByCliente(idCliente);
+  async findByCliente(idCliente: string): Promise<ProyectoDocument[]> {
+    ProyectoHelper.validateId(idCliente);
+    return this.proyectoRepository.findByCliente(idCliente);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDto: UpdateProyectoDto) {
-    return this.proyectoService.update(id, updateDto);
+  async update(id: string, updateDto: UpdateProyectoDto): Promise<ProyectoDocument> {
+    ProyectoHelper.validateId(id);
+    
+    // Si vienen IDs en el update, los validamos también
+    if(updateDto.id_cliente) ProyectoHelper.validateId(updateDto.id_cliente);
+    
+    const data = ProyectoHelper.mapDtoToEntity(updateDto);
+    const updated = await this.proyectoRepository.update(id, data);
+    
+    if (!updated) throw new NotFoundException(`Proyecto ${id} no encontrado`);
+    return updated;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.proyectoService.remove(id);
+  async remove(id: string): Promise<ProyectoDocument> {
+    ProyectoHelper.validateId(id);
+    
+    const deleted = await this.proyectoRepository.softDelete(id);
+    if (!deleted) throw new NotFoundException(`Proyecto ${id} no encontrado`);
+    return deleted;
+  }
+
+  async restore(id: string): Promise<ProyectoDocument> {
+    ProyectoHelper.validateId(id);
+    
+    // Asumiendo que agregaste el método restore en tu repositorio (si no, agrégalo igual que en Area)
+    // Si tu repo no tiene restore definido en la interfaz IProyectoRepository, TS se quejará.
+    // Asegúrate de agregarlo a la interfaz y a la implementación del repo.
+    const restored = await (this.proyectoRepository as any).restore(id); 
+    
+    if (!restored) throw new NotFoundException(`No se pudo restaurar el proyecto ${id}`);
+    return restored;
   }
 }
