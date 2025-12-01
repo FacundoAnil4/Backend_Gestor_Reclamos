@@ -22,6 +22,11 @@ export class ProyectoController {
     return this.proyectoService.findOne(id);
   }
 
+  @Get('cliente/:idCliente')
+  findByCliente(@Param('idCliente') idCliente: string) {
+    return this.proyectoService.findByCliente(idCliente);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDto: UpdateProyectoDto) {
     return this.proyectoService.update(id, updateDto);

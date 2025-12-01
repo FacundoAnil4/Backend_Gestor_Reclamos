@@ -9,6 +9,8 @@ export interface IProyectoRepository {
     
     // Método especial para traer el proyecto con los datos del cliente y tipo
     findByIdWithRelations(id: string): Promise<ProyectoDocument | null>;
+
+    findByCliente(idCliente: string): Promise<ProyectoDocument[]>;
     
     findAll(): Promise<ProyectoDocument[]>;
 

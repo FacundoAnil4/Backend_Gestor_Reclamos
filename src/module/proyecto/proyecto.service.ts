@@ -35,6 +35,11 @@ export class ProyectoService {
     return proyecto;
   }
 
+  async findByCliente(idCliente: string): Promise<ProyectoDocument[]> {
+    if (!Types.ObjectId.isValid(idCliente)) throw new BadRequestException('ID Cliente inválido');
+    return this.proyectoRepository.findByCliente(idCliente);
+  }
+
   async update(id: string, updateDto: UpdateProyectoDto): Promise<ProyectoDocument> {
     if (!Types.ObjectId.isValid(id)) throw new BadRequestException('ID inválido');
     
