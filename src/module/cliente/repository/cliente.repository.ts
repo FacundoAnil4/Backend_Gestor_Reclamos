@@ -20,7 +20,7 @@ export class ClienteRepository implements IClienteRepository {
     }
 
     async findAll(): Promise<ClienteDocument[]> {
-        return this.clienteModel.find().exec();
+        return this.clienteModel.find({ deletedAt: null }).exec();
     }
 
     async findById(id: string): Promise<ClienteDocument | null> {

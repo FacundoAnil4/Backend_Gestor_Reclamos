@@ -65,4 +65,14 @@ export class ProyectoRepository implements IProyectoRepository {
                 )
                 .exec();
         }
+
+    async restore(id: string): Promise<ProyectoDocument | null> {
+        return this.proyectoModel
+            .findByIdAndUpdate(
+                id, 
+                { deletedAt: null }, 
+                { new: true }
+        )
+        .exec();
+}
 }

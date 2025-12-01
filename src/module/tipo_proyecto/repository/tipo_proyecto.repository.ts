@@ -43,4 +43,14 @@ export class TipoProyectoRepository implements ITipoProyectoRepository {
             )
             .exec();
     }
+
+    async restore(id: string): Promise<TipoProyectoDocument | null> {
+        return this.tipoProyectoModel
+            .findByIdAndUpdate(
+                id, 
+                { deletedAt: null }, 
+                { new: true }
+            )
+            .exec();
+    }
 }

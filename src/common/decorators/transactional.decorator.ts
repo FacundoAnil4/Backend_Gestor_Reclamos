@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { HistorialReclamoService } from '../../historial_reclamo/historial_reclamo.service';
-import { CreateHistorialReclamoDto } from '../../historial_reclamo/dto/create-historial_reclamo.dto';
+import { HistorialReclamoService } from '../../module/historial_reclamo/historial_reclamo.service';
+import { CreateHistorialReclamoDto } from '../../module/historial_reclamo/dto/create-historial_reclamo.dto';
 
 @Controller('historial-reclamo')
 export class HistorialReclamoController {
